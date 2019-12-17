@@ -1,8 +1,12 @@
-from config import Config as c
-import aiofiles
 import json
 import re
+
+import aiofiles
+
+from config import Config as c
+
 from . import http
+
 
 async def get_race(raceid, complete=False):
     # if we're developing locally, we want to have some artifical data to use that isn't from SRL
@@ -21,17 +25,21 @@ async def get_race(raceid, complete=False):
 
     return await http.request_generic(f'http://api.speedrunslive.com/races/{raceid}', returntype='json')
 
+
 def srl_race_id(channel):
     if channel == '#srl-synack-testing':
         return 'test'
     if re.search('^#srl-[a-z0-9]{5}$', channel):
         return channel.partition('-')[-1]
 
+
 async def get_all_races():
     return await http.request_generic(f'http://api.speedrunslive.com/races', returntype='json')
 
+
 async def send_irc_message(raceid, message):
-    if c.DEBUG: return
+    if c.DEBUG:
+        return
     data = {
         'auth': c.InternalApiToken,
         'channel': f'#srl-{raceid}',

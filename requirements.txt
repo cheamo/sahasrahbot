@@ -19,3 +19,6 @@ oauth2client
 jishaku
 python-dotenv
 html2markdown
+pycodestyle
+pylint
+pytz

@@ -1,13 +1,13 @@
 import asyncio
-import discord
-from discord.ext import commands
 import importlib
 import traceback
 
+import discord
+from discord.ext import commands
+
+from alttprbot.api.app import app
 # from alttprbot import reactionrole
 from alttprbot.util import orm
-from alttprbot.api.app import app
-
 from config import Config as c
 
 # from dotenv import load_dotenv
@@ -38,7 +38,8 @@ if not c.DEBUG:
     @discordbot.event
     async def on_command_error(ctx, error):
         riplink = discord.utils.get(ctx.bot.emojis, name='RIPLink')
-        if riplink is None: riplink = '👎'
+        if riplink is None:
+            riplink = '👎'
 
         await ctx.message.remove_reaction('⌚', ctx.bot.user)
 

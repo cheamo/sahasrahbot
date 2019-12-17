@@ -4,7 +4,6 @@ import string
 from collections import OrderedDict
 
 import aiofiles
-import pyz3r.misc
 
 from config import Config as c
 
@@ -18,13 +17,14 @@ async def generate_spoiler_game(preset):
     spoiler_log_url = await write_json_to_disk(seed)
     return seed, spoiler_log_url
 
+
 async def write_json_to_disk(seed):
     filename = f"smz3_spoiler__{seed.hash}__{''.join(random.choices(string.ascii_letters + string.digits, k=4))}.txt"
 
     # magic happens here to make it pretty-printed and tournament-compliant
     s = seed.data['spoiler']
 
-    sorteddict = OrderedDict() 
+    sorteddict = OrderedDict()
 
     sectionlist = [
         'Special',
@@ -70,8 +70,8 @@ async def write_json_to_disk(seed):
     for section in sectionlist:
         sorteddict[section] = s[section]
 
-    sorteddict['meta']           = s['meta']
-    sorteddict['meta']['hash']   = seed.hash
+    sorteddict['meta'] = s['meta']
+    sorteddict['meta']['hash'] = seed.hash
     sorteddict['meta']['permalink'] = seed.url
 
     for dungeon, prize in prizemap:
@@ -86,4 +86,3 @@ async def write_json_to_disk(seed):
     #     await out.write(dump)
 
     return c.SpoilerLogUrlBase + '/' + filename
-

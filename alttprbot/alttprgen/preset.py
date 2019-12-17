@@ -1,15 +1,15 @@
 import os
 import random
-import json
 
 import aiofiles
-from ..util.alttpr_discord import alttpr
 import yaml
 
-from config import Config as c
+from ..util.alttpr_discord import alttpr
+
 
 class PresetNotFoundException(Exception):
     pass
+
 
 async def get_preset(preset, hints=False, nohints=False, spoilers="off", tournament=True):
     # make sure someone isn't trying some path traversal shennaniganons
@@ -18,7 +18,8 @@ async def get_preset(preset, hints=False, nohints=False, spoilers="off", tournam
         async with aiofiles.open(os.path.join("presets", basename)) as f:
             preset_dict = yaml.load(await f.read(), Loader=yaml.FullLoader)
     except FileNotFoundError:
-        raise PresetNotFoundException(f'Could not find preset {preset}.  See a list of available presets at <https://l.synack.live/presets>')
+        raise PresetNotFoundException(
+            f'Could not find preset {preset}.  See a list of available presets at <https://l.synack.live/presets>')
 
     if hints:
         preset_dict['settings']['hints'] = 'on'
@@ -29,7 +30,7 @@ async def get_preset(preset, hints=False, nohints=False, spoilers="off", tournam
     preset_dict['settings']['spoilers'] = spoilers
 
     if preset_dict.get('shuffle_prize_packs', False) and preset_dict['customizer']:
-        p = ['0','1','2','3','4','5','6']
+        p = ['0', '1', '2', '3', '4', '5', '6']
         random.shuffle(p)
         # print(p)
 

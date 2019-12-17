@@ -1,24 +1,23 @@
-from ..database import config, permissions, daily
+import asyncio
+import re
 
+import aiocache
+import aiohttp
+import bs4
 import discord
-from discord.ext import tasks, commands
+import html5lib
+from discord.ext import commands, tasks
 
 from config import Config as c
 
-import bs4
-import aiohttp
-import re
-import asyncio
-import html5lib
-
-import aiocache
-
+from ..database import config, daily, permissions
 from ..util.alttpr_discord import alttpr
 
 
 def is_daily_channel():
     async def predicate(ctx):
-        if ctx.guild is None: return False
+        if ctx.guild is None:
+            return False
         result = await config.get_parameter(ctx.guild.id, 'DailyAnnouncerChannel')
         if result is not None:
             channels = result['value'].split(',')
@@ -39,19 +38,24 @@ class Daily(commands.Cog):
         help='Returns the currently daily seed.')
     @is_daily_channel()
     async def daily(self, ctx):
-        hash = await find_daily_hash()
-        seed = await get_daily_seed(hash)
-        embed = await seed.embed(emojis=self.bot.emojis, notes="This is today's daily challenge.  The latest challenge can always be found at https://alttpr.com/daily")
+        perma_id = await find_daily_hash()
+        seed = await get_daily_seed(perma_id)
+        embed = await seed.embed(
+            emojis=self.bot.emojis,
+            notes="This is today's daily challenge.  The latest challenge can always be found at https://alttpr.com/daily"
+        )
         await update_daily(hash)
         await ctx.send(embed=embed)
 
-
     @tasks.loop(minutes=5, reconnect=True)
     async def announce_daily(self):
-        hash = await find_daily_hash()
-        if await update_daily(hash):
-            seed = await get_daily_seed(hash)
-            embed = await seed.embed(emojis=self.bot.emojis, notes="This is today's daily challenge.  The latest challenge can always be found at https://alttpr.com/daily")
+        perma_id = await find_daily_hash()
+        if await update_daily(perma_id):
+            seed = await get_daily_seed(perma_id)
+            embed = await seed.embed(
+                emojis=self.bot.emojis,
+                notes="This is today's daily challenge.  The latest challenge can always be found at https://alttpr.com/daily"
+            )
             daily_announcer_channels = await config.get_all_parameters_by_name('DailyAnnouncerChannel')
             for result in daily_announcer_channels:
                 guild = self.bot.get_guild(result['guild_id'])
@@ -76,8 +80,9 @@ async def update_daily(gamehash):
 
 
 @aiocache.cached(ttl=86400, cache=aiocache.SimpleMemoryCache)
-async def get_daily_seed(hash):
-    return await alttpr(hash=hash)
+async def get_daily_seed(perma_id):
+    return await alttpr(hash=perma_id)
+
 
 @aiocache.cached(ttl=60, cache=aiocache.SimpleMemoryCache)
 async def find_daily_hash():

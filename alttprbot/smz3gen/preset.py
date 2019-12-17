@@ -1,5 +1,6 @@
 import pyz3r
 
+
 async def get_preset(preset, tournament=True, morph='randomized'):
     seed = await pyz3r.smz3(
         settings={

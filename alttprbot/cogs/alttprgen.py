@@ -1,24 +1,22 @@
+import json
+
+import aiohttp
 import discord
+import pyz3r
 from discord.ext import commands
 
-from ..util.alttpr_discord import alttpr
-from ..util import checks
-import pyz3r
+from config import Config as c
 
 from ..alttprgen.mystery import generate_random_game
 from ..alttprgen.preset import get_preset
 from ..alttprgen.spoilers import generate_spoiler_game
-
-from config import Config as c
-
-import aiohttp
-import json
+from ..util import checks
+from ..util.alttpr_discord import alttpr
 
 
 class AlttprGen(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
 
     @commands.command(
         help='Generate a customizer game using a customizer save file attached to the message.'
@@ -49,23 +47,24 @@ class AlttprGen(commands.Cog):
         seed, preset_dict = await get_preset(preset, hints=hints, spoilers="off")
         goal_name = preset_dict['goal_name']
         if not seed:
-            raise Exception('Could not generate game.  Maybe preset does not exist?')
+            raise Exception(
+                'Could not generate game.  Maybe preset does not exist?')
         embed = await seed.embed(emojis=self.bot.emojis)
         await ctx.send(embed=embed)
 
-
     @commands.command(
-        help='Generate a preset without the tournament flag enabled.  Find a list of presets at https://l.synack.live/presets'
+        help=('Generate a preset without the tournament flag enabled. '
+              'Find a list of presets at https://l.synack.live/presets')
     )
     @checks.restrict_to_channels_by_guild_config('AlttprGenRestrictChannels')
     async def nonracepreset(self, ctx, preset, hints=False):
         seed, preset_dict = await get_preset(preset, hints=hints, spoilers="on", tournament=False)
         goal_name = preset_dict['goal_name']
         if not seed:
-            raise Exception('Could not generate game.  Maybe preset does not exist?')
+            raise Exception(
+                'Could not generate game.  Maybe preset does not exist?')
         embed = await seed.embed(emojis=self.bot.emojis)
         await ctx.send(embed=embed)
-
 
     @commands.command(
         help='Generate a spoiler game.  Find a list of presets at https://l.synack.live/presets'
@@ -74,10 +73,10 @@ class AlttprGen(commands.Cog):
     async def spoiler(self, ctx, preset):
         seed, preset_dict, spoiler_log_url = await generate_spoiler_game(preset)
         if not seed:
-            raise Exception('Could not generate game.  Maybe preset does not exist?')
+            raise Exception(
+                'Could not generate game.  Maybe preset does not exist?')
         embed = await seed.embed(emojis=self.bot.emojis)
         await ctx.send(f'Spoiler log <{spoiler_log_url}>', embed=embed)
-
 
     @commands.command(
         help='Generate a game with randomized settings.  Find a list of weights at https://l.synack.live/weights'
@@ -86,17 +85,19 @@ class AlttprGen(commands.Cog):
     @commands.cooldown(rate=3, per=900, type=commands.BucketType.user)
     async def random(self, ctx, weightset='weighted', tournament: bool = True):
         if weightset == "custom" and not ctx.message.attachments:
-            raise Exception('You must attach a file when specifying a custom weightset.')
+            raise Exception(
+                'You must attach a file when specifying a custom weightset.')
         if weightset == "custom" and not ctx.message.attachments[0].filename.endswith('.yaml'):
             raise Exception('File should have a .yaml extension.')
         elif not weightset == "custom" and ctx.message.attachments:
-            raise Exception('If you\'re intending to use a custom weightset, please specify the weightset as "custom".')
-        
+            raise Exception(
+                'If you\'re intending to use a custom weightset, please specify the weightset as "custom".')
+
         seed = await generate_random_game(
             weightset=weightset,
             tournament=tournament,
             spoilers="off",
-            custom_weightset_url=ctx.message.attachments[0].url if weightset=="custom" else None
+            custom_weightset_url=ctx.message.attachments[0].url if weightset == "custom" else None
         )
         embed = await seed.embed(emojis=self.bot.emojis, name="Random Settings Game")
         await ctx.send(embed=embed)
@@ -108,30 +109,32 @@ class AlttprGen(commands.Cog):
     @commands.cooldown(rate=3, per=900, type=commands.BucketType.user)
     async def mystery(self, ctx, weightset='weighted'):
         if weightset == "custom" and not ctx.message.attachments:
-            raise Exception('You must attach a file when specifying a custom weightset.')
+            raise Exception(
+                'You must attach a file when specifying a custom weightset.')
         if weightset == "custom" and not ctx.message.attachments[0].filename.endswith('.yaml'):
             raise Exception('File should have a .yaml extension.')
         elif not weightset == "custom" and ctx.message.attachments:
-            raise Exception('If you\'re intending to use a custom weightset, please specify the weightset as "custom".')
+            raise Exception(
+                'If you\'re intending to use a custom weightset, please specify the weightset as "custom".')
 
         seed = await generate_random_game(
             weightset=weightset,
             tournament=True,
             spoilers="mystery",
-            custom_weightset_url=ctx.message.attachments[0].url if weightset=="custom" else None
+            custom_weightset_url=ctx.message.attachments[0].url if weightset == "custom" else None
         )
         embed = await seed.embed(emojis=self.bot.emojis, name="Mystery Game")
         await ctx.send(embed=embed)
 
-
-    @commands.command(hidden=True,aliases=['festives'])
+    @commands.command(hidden=True, aliases=['festives'])
     async def festive(self, ctx):
         embed = discord.Embed(
             title='Festive Randomizer Information',
             description='Latest details of any upcoming festive randomizers.',
             color=discord.Color.green()
         )
-        embed.set_image(url='https://cdn.discordapp.com/attachments/307860211333595146/654123045375442954/unknown.png')
+        embed.set_image(
+            url='https://cdn.discordapp.com/attachments/307860211333595146/654123045375442954/unknown.png')
         await ctx.send(embed=embed)
 
 

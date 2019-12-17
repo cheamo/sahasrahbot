@@ -1,6 +1,8 @@
-import aiohttp
 import json
+
+import aiohttp
 import yaml
+
 
 async def request_generic(url, method='get', reqparams=None, data=None, header={}, auth=None, returntype='text'):
     async with aiohttp.ClientSession(auth=None, raise_for_status=True) as session:
@@ -13,6 +15,7 @@ async def request_generic(url, method='get', reqparams=None, data=None, header={
                 return await resp.read()
             elif returntype == 'yaml':
                 return yaml.safe_load(await resp.read())
+
 
 async def request_json_post(url, data, auth=None, returntype='text'):
     async with aiohttp.ClientSession(auth=auth, raise_for_status=True) as session:

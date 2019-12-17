@@ -20,23 +20,30 @@ class SrlBot(pydle.Client):
     # source = sendering of the message
     # message = the message, duh
     async def on_message(self, target, source, message):
-        # print messages to stdout for debugging purposes.  We should eventually set this up so it writes to a log file or something.
+        # print messages to stdout for debugging purposes.  We should
+        # eventually set this up so it writes to a log file or something.
         print('MESSAGE: ' + target + ' - ' + source +
               ' - ' + message)  # dumb debugging message
 
         # filter messages sent by the bot (we do not want to react to these)
-        if source == c.SRL_NICK: return
+        if source == c.SRL_NICK:
+            return
 
         # handle messages from racebot
-        await racebot.handler(target=target, source=source, message=message, client=self)
+        await racebot.handler(
+            target=target,
+            source=source,
+            message=message,
+            client=self
+        )
 
         # handle user commands
         await commands.handler(target=target, source=source, message=message, client=self)
 
-
     # target = you
     # source = sendering of the message
     # message = the message, duh
+
     async def on_notice(self, target, source, message):
         print('NOTICE: ' + target + ' - ' + source +
               ' - ' + message)  # dumb debugging message
@@ -46,16 +53,16 @@ class SrlBot(pydle.Client):
             await asyncio.sleep(1)
             await self.join('#speedrunslive')
             await self.join('#alttpr')
-            await self.join_active_races(['alttphacks','alttpsm'])
+            await self.join_active_races(['alttphacks', 'alttpsm'])
             await self.process_active_races()
-            if c.DEBUG: await self.join('#srl-synack-testing')
-
+            if c.DEBUG:
+                await self.join('#srl-synack-testing')
 
     async def join_active_races(self, games):
         races = await get_all_races()
         for race in races['races']:
             if race['game']['abbrev'] in games:
-                race_id=race['id']
+                race_id = race['id']
                 if not self.in_channel(f'#srl-{race_id}'):
                     if c.DEBUG:
                         print(f'would have joined #srl-{race_id}')
@@ -79,6 +86,7 @@ class SrlBot(pydle.Client):
 
 app = Pint(__name__, title='Srl Bot API')
 
+
 @app.route('/api/message')
 class Message(Resource):
     async def post(self):
@@ -90,6 +98,7 @@ class Message(Resource):
             return jsonify({"success": True})
         else:
             abort(401)
+
 
 if __name__ == '__main__':
     client = SrlBot(c.SRL_NICK, realname=c.SRL_NICK)

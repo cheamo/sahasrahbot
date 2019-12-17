@@ -1,16 +1,17 @@
 import argparse
-import sys
 import shlex
-from alttprbot.util.srl import get_all_races, get_race, srl_race_id
-from alttprbot.database import srl_races
-from alttprbot.alttprgen import preset, mystery, spoilers
+import sys
+
+from alttprbot.alttprgen import mystery, preset, spoilers
 from alttprbot.database import spoiler_races, srl_races
 from alttprbot.smz3gen import preset as smz3_preset
 from alttprbot.smz3gen import spoilers as smz3_spoilers
+from alttprbot.util.srl import get_race, srl_race_id
 
 
 async def handler(target, source, message, client):
-    if not message[0] == '$': return
+    if not message[0] == '$':
+        return
 
     try:
         args = parse_args(message)
@@ -138,7 +139,7 @@ async def handler(target, source, message, client):
                 return
 
             goal = f"vt8 randomizer - spoiler {goal_name}"
-            studytime = 900 if not args.studytime else args.studytime 
+            studytime = 900 if not args.studytime else args.studytime
             code = await seed.code()
             if args.silent:
                 await client.message(target, f"{goal} - {seed.url} - ({'/'.join(code)})")
@@ -153,7 +154,7 @@ async def handler(target, source, message, client):
                 return
 
             goal = f"spoiler beat the games"
-            studytime = 1500 if not args.studytime else args.studytime 
+            studytime = 1500 if not args.studytime else args.studytime
             if args.silent:
                 await client.message(target, f"{goal} - {seed.url}")
             else:
@@ -187,6 +188,7 @@ async def handler(target, source, message, client):
 
     if args.command == '$echo':
         await client.message(source, args.message)
+
 
 def parse_args(message):
     split_msg = ['sb'] + shlex.split(message)
@@ -230,12 +232,12 @@ def parse_args(message):
 
     parser_help = subparsers.add_parser('$help')
 
-    
     args = parser.parse_args(split_msg)
 
     return args
 
-class SrlArgumentParser(argparse.ArgumentParser):    
+
+class SrlArgumentParser(argparse.ArgumentParser):
     def _get_action_from_name(self, name):
         """Given a name, get the Action instance registered with this parser.
         If only it were made available in the ArgumentError object. It is 
