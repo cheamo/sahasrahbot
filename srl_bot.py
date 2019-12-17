@@ -94,7 +94,7 @@ class Message(Resource):
         if 'auth' in data and data['auth'] == c.InternalApiToken:
             if not client.in_channel(data['channel']):
                 abort(400, "Bot not in specified channel")
-            result = await client.message(data['channel'], data['message'])
+            await client.message(data['channel'], data['message'])
             return jsonify({"success": True})
         else:
             abort(401)
