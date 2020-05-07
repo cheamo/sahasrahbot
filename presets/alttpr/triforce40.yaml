@@ -1,27 +1,97 @@
+---
+goal_name: "40/50 triforce hunt"
 customizer: true
-goal_name: fast ganon open 4/4 w/ starting items
-shuffle_prize_packs: true
 settings:
-  accessibility: items
-  crystals:
-    ganon: '4'
-    tower: '4'
+  l: {}
+  eq:
+  - BossHeartContainer
+  - BossHeartContainer
+  - BossHeartContainer
+  goal: triforce-hunt
+  item:
+    pool: normal
+    functionality: normal
+  lang: en
+  mode: open
+  name: ''
+  drops:
+    '0':
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    '1':
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    '2':
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    '3':
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    '4':
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    '5':
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    '6':
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    crab:
+    - auto_fill
+    - auto_fill
+    fish:
+    - auto_fill
+    pull:
+    - auto_fill
+    - auto_fill
+    - auto_fill
+    stun:
+    - auto_fill
+  notes: 40/50 Triforce Hunt
   custom:
     customPrizePacks: false
-    canBombJump: false
-    canBootsClip: false
-    canBunnyRevive: false
-    canBunnySurf: false
-    canDungeonRevive: false
-    canFakeFlipper: false
-    canMirrorClip: false
-    canMirrorWrap: false
-    canOWYBA: false
-    canOneFrameClipOW: false
-    canSuperBunny: false
-    canSuperSpeed: false
-    canWaterFairyRevive: false
-    canWaterWalk: false
     drop:
       count:
         ArrowRefill10: 3
@@ -126,7 +196,7 @@ settings:
         L1SwordAndShield: 0
         L3Sword: 0
         L4Sword: 0
-        Lamp: 0
+        Lamp: 1
         MagicMirror: 1
         MapA1: 0
         MapA2: 1
@@ -144,22 +214,22 @@ settings:
         MapP3: 1
         MasterSword: 0
         MirrorShield: 0
-        MoonPearl: 0
+        MoonPearl: 1
         Mushroom: 1
-        Nothing: 8
+        Nothing: 1
         OcarinaActive: 0
-        OcarinaInactive: 0
+        OcarinaInactive: 1
         OneHundredRupees: 1
         OneRupee: 2
-        PegasusBoots: 0
+        PegasusBoots: 1
         PieceOfHeart: 24
         Powder: 1
         PowerGlove: 0
         ProgressiveArmor: 2
         ProgressiveBow: 2
-        ProgressiveGlove: 0
+        ProgressiveGlove: 2
         ProgressiveShield: 3
-        ProgressiveSword: 2
+        ProgressiveSword: 4
         Quake: 1
         QuarterMagic: 0
         RedBoomerang: 1
@@ -176,9 +246,23 @@ settings:
         ThreeHundredRupees: 5
         TitansMitt: 0
         Triforce: 0
-        TriforcePiece: 0
+        TriforcePiece: 50
         TwentyRupees: 28
-    item.Goal.Required: ''
+    canBombJump: false
+    canBootsClip: false
+    canBunnyRevive: false
+    canBunnySurf: false
+    canDungeonRevive: false
+    canFakeFlipper: false
+    canMirrorClip: false
+    canMirrorWrap: false
+    canOWYBA: false
+    canOneFrameClipOW: false
+    canSuperBunny: false
+    canSuperSpeed: false
+    canWaterFairyRevive: false
+    canWaterWalk: false
+    item.Goal.Required: 40
     item.require.Lamp: false
     item.value.BlueClock: ''
     item.value.GreenClock: ''
@@ -201,107 +285,14 @@ settings:
     rom.timerMode: 'off'
     rom.timerStart: ''
     spoil.BootsLocation: false
-  drops:
-    '0':
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    '1':
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    '2':
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    '3':
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    '4':
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    '5':
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    '6':
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    crab:
-    - auto_fill
-    - auto_fill
-    fish:
-    - auto_fill
-    pull:
-    - auto_fill
-    - auto_fill
-    - auto_fill
-    stun:
-    - auto_fill
-  dungeon_items: standard
-  eq:
-  - ProgressiveSword
-  - ProgressiveSword
-  - MoonPearl
-  - Lamp
-  - PegasusBoots
-  - ProgressiveGlove
-  - ProgressiveGlove
-  - OcarinaActive
-  - BossHeartContainer
-  - BossHeartContainer
-  - BossHeartContainer
-  glitches: none
-  goal: fast_ganon
-  item:
-    functionality: normal
-    pool: normal
-  item_placement: advanced
-  l: {}
-  lang: en
-  mode: open
-  name: BlitzMode
-  notes: 4/4 fast ganon. start with Boots, Activated Flute, Pearl, Mitts, Master Sword,
-    Lamp
-  spoilers: "off"
-  tournament: true
   weapons: randomized
-  hints: "on"
+  crystals:
+    ganon: '7'
+    tower: '7'
+  glitches: none
+  tournament: true
+  accessibility: items
+  dungeon_items: standard
+  item_placement: advanced
+  spoilers: "off"
+  hints: "off"

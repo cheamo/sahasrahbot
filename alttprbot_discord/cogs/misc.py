@@ -1,4 +1,6 @@
+import asyncio
 import json
+import random
 from urllib.parse import urljoin
 
 import aiocache
@@ -18,16 +20,38 @@ class Misc(commands.Cog):
     async def on_message(self, message):
         if message.content.lower() == '!role furaime':
             await message.add_reaction('👀')
+        if discord.utils.get(message.role_mentions, id=524738280630124574):
+            if random.choice([True, False]):
+                await asyncio.sleep((random.random()*30)+30)
+                await message.channel.send(f'@{message.author.mention}')
 
-    @commands.command()
-    @commands.is_owner()
-    async def joineddate(self, ctx, member: discord.Member):
-        await ctx.send(member.joined_at)
+    @commands.command(aliases=['joineddate'])
+    @commands.check_any(
+        commands.has_any_role(523276397679083520, 307883683526868992),
+        commands.has_permissions(administrator=True),
+        commands.has_permissions(manage_guild=True)
+    )
+    async def memberinfo(self, ctx, member: discord.Member=None):
+        if member is None:
+            member = ctx.author
+        embed = discord.Embed(
+            title=f"Member info for {member.name}#{member.discriminator}",
+            color=member.color
+        )
+        embed.add_field(name='Created at', value=member.created_at, inline=False)
+        embed.add_field(name='Joined at', value=member.joined_at, inline=False)
+        embed.add_field(name="Discord ID", value=member.id, inline=False)
+        embed.set_thumbnail(url=member.avatar_url)
+        await ctx.send(embed=embed)
 
     @commands.command()
     @commands.is_owner()
     async def throwerror(self, ctx):
         raise Exception('omg')
+
+    @commands.command()
+    async def prng(self, ctx):
+        await ctx.send("PRNG is RNG!  It is random!  Humans tend to identify patterns where they do not exist.\n\nIf you're a Linux nerd check this out: https://www.2uo.de/myths-about-urandom/")
 
     @commands.command(hidden=True)
     async def pedestalgoal(self, ctx):
@@ -39,7 +63,12 @@ class Misc(commands.Cog):
         help="Posts instructions on how to verify your ROM is correct, or how to get the permalink to your randomized game."
     )
     async def rom(self, ctx):
-        await ctx.send("If you need help verifying your legally dumped Japan 1.0 rom file needed for ALTTPR, check this out: http://alttp.mymm1.com/game/checkcrc/\nIt can also tell you the permalink of an already randomized game!\n\nFor legal reasons, we cannot provide help with finding this ROM online.")
+        await ctx.send(
+            "If you need help verifying your legally-dumped Japanese version 1.0 A Link to the Past Game file needed to run ALttPR, use this tool: <http://alttp.mymm1.com/game/checkcrc/>\n"
+            "It can also help get the permalink page URL which has access to the Spoiler Log depending on the settings that were chosen. Not all games that are generated have access to the Spoiler Log.\n\n"
+            "For legal reasons, we cannot provide help with finding this ROM online.  Please do not ask here for assistance with this.\n"
+            "See <#543572578787393556> for details."
+        )
 
     @commands.command(hidden=True)
     async def trpegs(self, ctx):

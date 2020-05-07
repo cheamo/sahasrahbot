@@ -19,7 +19,7 @@ async def determine_prefix(bot, message):
 
 
 discordbot = commands.Bot(
-    command_prefix=determine_prefix,
+    command_prefix=determine_prefix
 )
 
 discordbot.load_extension("alttprbot_discord.cogs.alttprgen")
@@ -36,7 +36,7 @@ if util.find_spec('jishaku'):
 async def on_command_error(ctx, error):
     riplink = discord.utils.get(ctx.bot.emojis, name='RIPLink')
     await ctx.message.remove_reaction('⌚', ctx.bot.user)
-
+    print(error)
     if isinstance(error, commands.CheckFailure):
         pass
     elif isinstance(error, commands.errors.MissingPermissions):

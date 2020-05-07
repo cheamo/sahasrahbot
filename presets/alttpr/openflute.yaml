@@ -1,11 +1,10 @@
 ---
-goal_name: "standard w/ boots start"
+goal_name: "open w/ pre-activated flute"
 customizer: true
-shuffle_prize_packs: true
 settings:
   l: {}
   eq:
-  - PegasusBoots
+  - OcarinaActive
   - BossHeartContainer
   - BossHeartContainer
   - BossHeartContainer
@@ -14,8 +13,8 @@ settings:
     pool: normal
     functionality: normal
   lang: en
-  mode: standard
-  name: ''
+  mode: open
+  name: 'open flute'
   drops:
     '0':
     - auto_fill
@@ -91,7 +90,7 @@ settings:
     - auto_fill
     stun:
     - auto_fill
-  notes: Open w/ Boots Start
+  notes: Open w/ Pre-activated Flute
   custom:
     customPrizePacks: false
     drop:
@@ -218,7 +217,7 @@ settings:
         BookOfMudora: 1
         BowAndArrows: 0
         MirrorShield: 0
-        PegasusBoots: 0
+        PegasusBoots: 1
         PieceOfHeart: 24
         QuarterMagic: 0
         RedBoomerang: 1
@@ -234,7 +233,7 @@ settings:
         HeartContainer: 1
         ProgressiveBow: 2
         BottleWithFairy: 0
-        OcarinaInactive: 1
+        OcarinaInactive: 0
         BottleWithRandom: 4
         L1SwordAndShield: 0
         OneHundredRupees: 1
@@ -291,9 +290,10 @@ settings:
   crystals:
     ganon: '7'
     tower: '7'
+  glitches: none
   tournament: true
   accessibility: items
   dungeon_items: standard
   item_placement: advanced
   spoilers: "off"
-  hints: "on"
+  hints: "off"

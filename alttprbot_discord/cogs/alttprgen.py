@@ -3,6 +3,7 @@ import json
 
 import aiohttp
 import discord
+import yaml
 from discord.ext import commands
 
 import pyz3r
@@ -11,36 +12,23 @@ from alttprbot.alttprgen.mystery import (generate_random_game,
 from alttprbot.alttprgen.preset import get_preset
 from alttprbot.alttprgen.spoilers import generate_spoiler_game
 from alttprbot.exceptions import SahasrahBotException
+from alttprbot_discord.util.alttpr_discord import alttpr
 
 from ..util import checks
-from ..util.alttpr_discord import alttpr
 
 
 class AlttprGen(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(
-        brief='Generate a customizer game.',
-        help='Generate a customizer game using a customizer save file attached to the message.'
-    )
-    @checks.restrict_to_channels_by_guild_config('AlttprGenRestrictChannels')
-    async def custom(self, ctx, tournament: bool = True):
-        try:
-            if not ctx.message.attachments[0].filename.endswith('.json'):
-                raise SahasrahBotException('File should have a .json extension.')
-        except IndexError as err:
-            raise SahasrahBotException('You must attach a customizer save json file.') from err
-
-        customizer_settings = await get_customizer_json(ctx.message.attachments[0].url)
-
-        settings = pyz3r.customizer.convert2settings(
-            customizer_settings, tournament=tournament)
-
-        seed = await alttpr(customizer=True, settings=settings)
-
-        embed = await seed.embed(emojis=self.bot.emojis)
-        await ctx.send(embed=embed)
+    @commands.command()
+    @commands.is_owner()
+    async def goalstring(self, ctx, hash_id):
+        seed = await alttpr(hash_id=hash_id)
+        await ctx.send(
+            f"goal string: `{seed.generated_goal}`\n"
+            f"file select code: {seed.build_file_select_code(emojis=self.bot.emojis)}"
+        )
 
     @commands.command(
         brief='Generate a race preset.',
@@ -81,23 +69,55 @@ class AlttprGen(commands.Cog):
         embed = await seed.embed(emojis=self.bot.emojis)
         await ctx.send(f'Spoiler log <{spoiler_log_url}>', embed=embed)
 
-    @commands.command(
+    @commands.group(
         brief='Generate a game with randomized settings.',
-        help='Generate a game with randomized settings.  Find a list of weights at https://l.synack.live/weights'
+        help='Generate a game with randomized settings.  Find a list of weights at https://l.synack.live/weights',
+        invoke_without_command=True,
     )
     @checks.restrict_to_channels_by_guild_config('AlttprGenRestrictChannels')
     @commands.cooldown(rate=3, per=900, type=commands.BucketType.user)
     async def random(self, ctx, weightset='weighted', tournament: bool = True):
         await randomgame(ctx=ctx, weightset=weightset, tournament=tournament, spoilers="off", festive=False)
 
-    @commands.command(
+    @random.command(
+        name='custom',
+        brief='Generate a mystery game with custom weights.',
+        help='Generate a mystery game with custom weights.  This file should be attached to the message.'
+    )
+    @commands.cooldown(rate=3, per=900, type=commands.BucketType.user)
+    @checks.restrict_to_channels_by_guild_config('AlttprGenRestrictChannels')
+    async def random_custom(self, ctx, tournament: bool = True):
+        if ctx.message.attachments:
+            content = await ctx.message.attachments[0].read()
+            weights = yaml.safe_load(content)
+            await randomgame(ctx=ctx, weights=weights, weightset='custom', tournament=tournament, spoilers="off", festive=False)
+        else:
+            raise SahasrahBotException("You must supply a valid yaml file.")
+
+    @commands.group(
         brief='Generate a mystery game.',
-        help='Generate a mystery game.  Find a list of weights at https://l.synack.live/weights'
+        help='Generate a mystery game.  Find a list of weights at https://l.synack.live/weights',
+        invoke_without_command=True,
     )
     @checks.restrict_to_channels_by_guild_config('AlttprGenRestrictChannels')
     @commands.cooldown(rate=3, per=900, type=commands.BucketType.user)
     async def mystery(self, ctx, weightset='weighted'):
         await randomgame(ctx=ctx, weightset=weightset, tournament=True, spoilers="mystery", festive=False)
+
+    @mystery.command(
+        name='custom',
+        brief='Generate a mystery game with custom weights.',
+        help='Generate a mystery game with custom weights.  This file should be attached to the message.'
+    )
+    @commands.cooldown(rate=3, per=900, type=commands.BucketType.user)
+    @checks.restrict_to_channels_by_guild_config('AlttprGenRestrictChannels')
+    async def mystery_custom(self, ctx):
+        if ctx.message.attachments:
+            content = await ctx.message.attachments[0].read()
+            weights = yaml.safe_load(content)
+            await randomgame(ctx=ctx, weights=weights, weightset='custom', tournament=True, spoilers="mystery", festive=False)
+        else:
+            raise SahasrahBotException("You must supply a valid yaml file.")
 
     @commands.command(
         brief='Generate a mystery game.',
@@ -145,7 +165,7 @@ class AlttprGen(commands.Cog):
         await ctx.send(file=discord.File(io.StringIO(json.dumps(settings, indent=4)), filename=f"{hash_id}.txt"))
 
 
-    @commands.command(
+    @commands.group(
         brief='Generate a festive game with randomized settings.',
         help='Generate a festive game with randomized settings.  Find a list of weights at https://l.synack.live/weights'
     )
@@ -154,7 +174,7 @@ class AlttprGen(commands.Cog):
     async def festiverandom(self, ctx, weightset='weighted', tournament: bool = True):
         await randomgame(ctx=ctx, weightset=weightset, tournament=tournament, spoilers="off", festive=True)
 
-    @commands.command(
+    @commands.group(
         brief='Generate a festive mystery game.',
         help='Generate a festive mystery game.  Find a list of weights at https://l.synack.live/weights'
     )
@@ -175,22 +195,83 @@ class AlttprGen(commands.Cog):
             url='https://cdn.discordapp.com/attachments/307860211333595146/654123045375442954/unknown.png')
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def alttprstats(self, ctx, raw: bool = False):
+        if ctx.message.attachments:
+            sram = await ctx.message.attachments[0].read()
+            parsed = parse_sram(sram)
+            if raw:
+                await ctx.send(
+                    file=discord.File(
+                        io.StringIO(json.dumps(parsed, indent=4)),
+                        filename=f"stats_{parsed['meta'].get('filename', 'alttpr').strip()}.txt"
+                    )
+                )
+            else:
+                embed = discord.Embed(
+                    title=f"ALTTPR Stats for \"{parsed['meta'].get('filename', '').strip()}\"",
+                    description=f"Collection Rate {parsed['stats'].get('collection rate')}",
+                    color=discord.Color.blue()
+                )
+                embed.add_field(
+                    name="Time",
+                    value=(
+                        f"Total Time: {parsed['stats'].get('total time', None)}\n"
+                        f"Lag Time: {parsed['stats'].get('lag time', None)}\n"
+                        f"Menu Time: {parsed['stats'].get('menu time', None)}\n\n"
+                        f"First Sword: {parsed['stats'].get('first sword', None)}\n"
+                        f"Flute Found: {parsed['stats'].get('flute found', None)}\n"
+                        f"Mirror Found: {parsed['stats'].get('mirror found', None)}\n"
+                        f"Boots Found: {parsed['stats'].get('boots found', None)}\n"
+                    ),
+                    inline=False
+                )
+                embed.add_field(
+                    name="Important Stats",
+                    value=(
+                        f"Bonks: {parsed['stats'].get('bonks', None)}\n"
+                        f"Deaths: {parsed['stats'].get('deaths', None)}\n"
+                        f"Revivals: {parsed['stats'].get('faerie revivals', None)}\n"
+                        f"Overworld Mirrors: {parsed['stats'].get('overworld mirrors', None)}\n"
+                        f"Rupees Spent: {parsed['stats'].get('rupees spent', None)}\n"
+                        f"Save and Quits: {parsed['stats'].get('save and quits', None)}\n"
+                        f"Screen Transitions: {parsed['stats'].get('screen transitions', None)}\n"
+                        f"Times Fluted: {parsed['stats'].get('times fluted', None)}\n"
+                        f"Underworld Mirrors: {parsed['stats'].get('underworld mirrors', None)}\n"
+                    )
+                )
+                embed.add_field(
+                    name="Misc Stats",
+                    value=(
+                        f"Swordless Bosses: {parsed['stats'].get('swordless bosses', None)}\n"
+                        f"Fighter Sword Bosses: {parsed['stats'].get('fighter sword bosses', None)}\n"
+                        f"Master Sword Bosses: {parsed['stats'].get('master sword bosses', None)}\n"
+                        f"Tempered Sword Bosses: {parsed['stats'].get('tempered sword bosses', None)}\n"
+                        f"Golden Sword Bosses: {parsed['stats'].get('golden sword bosses', None)}\n\n"
+                        f"Heart Containers: {parsed['stats'].get('heart containers', None)}\n"
+                        f"Heart Containers: {parsed['stats'].get('heart pieces', None)}\n"
+                        f"Mail Upgrade: {parsed['stats'].get('mails', None)}\n"
+                        f"Bottles: {parsed['equipment'].get('bottles', None)}\n"
+                        f"Silver Arrows: {parsed['equipment'].get('silver arrows', None)}\n"
+                    )
+                )
+                if not parsed.get('hash id', 'none') == 'none':
+                    seed = await alttpr(hash_id=parsed.get('hash id', 'none'))
+                    embed.add_field(name='File Select Code', value=seed.build_file_select_code(
+                        emojis=ctx.bot.emojis
+                    ), inline=False)
+                    embed.add_field(name='Permalink', value=seed.url, inline=False)
 
-async def randomgame(ctx, weightset, tournament=True, spoilers="off", festive=False):
-    if weightset == "custom" and not ctx.message.attachments:
-        raise SahasrahBotException(
-            'You must attach a file when specifying a custom weightset.')
-    if weightset == "custom" and not ctx.message.attachments[0].filename.endswith('.yaml'):
-        raise SahasrahBotException('File should have a .yaml extension.')
-    elif not weightset == "custom" and ctx.message.attachments:
-        raise SahasrahBotException(
-            'If you\'re intending to use a custom weightset, please specify the weightset as "custom".')
+                await ctx.send(embed=embed)
+        else:
+            raise SahasrahBotException("You must attach an SRAM file.")
 
+async def randomgame(ctx, weightset=None, weights=None, tournament=True, spoilers="off", festive=False):
     seed = await generate_random_game(
         weightset=weightset,
+        weights=weights,
         tournament=tournament,
         spoilers=spoilers,
-        custom_weightset_url=ctx.message.attachments[0].url if weightset == "custom" else None,
         festive=festive
     )
     embed = await seed.embed(emojis=ctx.bot.emojis, name="Mystery Game")

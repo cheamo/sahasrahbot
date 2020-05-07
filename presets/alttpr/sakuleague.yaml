@@ -1,5 +1,5 @@
 ---
-goal_name: normal open keysanity
+goal_name: open basic placement
 customizer: false
 settings:
   goal: ganon
@@ -8,7 +8,7 @@ settings:
     functionality: normal
   lang: en
   mode: open
-  hints: 'off'
+  hints: 'on'
   weapons: randomized
   crystals:
     ganon: '7'
@@ -23,5 +23,5 @@ settings:
   entrances: none
   tournament: true
   accessibility: items
-  dungeon_items: full
-  item_placement: advanced
+  dungeon_items: standard
+  item_placement: basic

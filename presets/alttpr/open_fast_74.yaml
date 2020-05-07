@@ -1,8 +1,8 @@
 ---
-goal_name: normal open keysanity
+goal_name: open fast ganon 7/4
 customizer: false
 settings:
-  goal: ganon
+  goal: fast_ganon
   item:
     pool: normal
     functionality: normal
@@ -11,7 +11,7 @@ settings:
   hints: 'off'
   weapons: randomized
   crystals:
-    ganon: '7'
+    ganon: '4'
     tower: '7'
   enemizer:
     boss_shuffle: none
@@ -23,5 +23,5 @@ settings:
   entrances: none
   tournament: true
   accessibility: items
-  dungeon_items: full
+  dungeon_items: standard
   item_placement: advanced
