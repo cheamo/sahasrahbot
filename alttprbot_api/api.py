@@ -4,7 +4,6 @@ from pyz3r.mystery import generate_random_settings
 from alttprbot.alttprgen.mystery import get_weights
 from alttprbot.util import http
 from alttprbot_discord.bot import discordbot
-from alttprbot_srl import nick_verifier
 
 sahasrahbotapi = Quart(__name__)
 
